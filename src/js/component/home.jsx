@@ -1,7 +1,7 @@
 //Importacion de la biblioteca principal de react
 import React, { useState, useEffect } from 'react';
 
-import React, { useState, useEffect } from 'react';
+
 
 // Componente principal de la aplicación
 const Home = () => {
@@ -27,18 +27,18 @@ const Home = () => {
   const comprobarUsuarioYCrearSiNoExiste = async () => {
     try {
       // Intentamos leer el usuario
-      const response = await fetch(`https://playground.4geeks.com/todo/user/${username}`);
+      const response = await fetch(`https://playground.4geeks.com/todo/user/juanRu`);
       
       // Si el estado no es OK, asumimos que el usuario no existe
       if (!response.ok) {
         console.log("El usuario no existe, creando usuario...");
         // Intentamos crear el usuario
-        const crearUsuarioResponse = await fetch(`https://playground.4geeks.com/todo/user/${username}`, {
+        const crearUsuarioResponse = await fetch(`https://playground.4geeks.com/todo/user/juanRu`, {
           method: "POST",
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ name: username }) // Se envía el nombre del usuario
+          body: JSON.stringify({ name: juanRu }) // Se envía el nombre del usuario
         });
 
         if (!crearUsuarioResponse.ok) {
@@ -57,7 +57,7 @@ const Home = () => {
   // Función para obtener las tareas del servidor
   const fetchData = async () => {
     try {
-      const response = await fetch(`https://playground.4geeks.com/todo/user/${username}`);
+      const response = await fetch(`https://playground.4geeks.com/todo/user/juanRu`);
       const data = await response.json();
 
       if (Array.isArray(data)) {
@@ -72,7 +72,7 @@ const Home = () => {
   const crearToDo = async (item) => {
     const updatedList = [...toDoList, { label: item, done: false }]; // Añadimos la nueva tarea a la lista actualizada
     try {
-      const response = await fetch(`https://playground.4geeks.com/todo/user/${username}`, {
+      const response = await fetch(`https://playground.4geeks.com/todo/user/juanRu`, {
         method: 'PUT', // El método PUT reemplaza toda la lista de tareas
         headers: {
           'Content-Type': 'application/json'
@@ -94,7 +94,7 @@ const Home = () => {
   const eliminarToDo = async (index) => {
     const updatedList = toDoList.filter((_, i) => i !== index); // Filtramos la tarea seleccionada
     try {
-      const response = await fetch(`https://playground.4geeks.com/todo/user/${username}`, {
+      const response = await fetch(`https://playground.4geeks.com/todo/user/juanRu`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -115,7 +115,7 @@ const Home = () => {
   // Función para limpiar todas las tareas
   const clearTasks = async () => {
     try {
-      const response = await fetch(`https://playground.4geeks.com/todo/user/${username}`, {
+      const response = await fetch(`https://playground.4geeks.com/todo/user/juanRu`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
