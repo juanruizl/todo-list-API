@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-// Función para crear un usuario
-async function crearUsuario() {
+// Crea juanru
+const crearUsuario = async () => {
     try {
         const res = await fetch('https://playground.4geeks.com/todo/users/juanru', {
             method: "POST",
@@ -16,10 +16,10 @@ async function crearUsuario() {
     } catch (error) {
         console.log('Error al crear usuario ==> ', error);
     }
-}
+};
 
-// Función para eliminar un usuario
-async function eliminarUsuario() {
+// Elimina juanru
+const eliminarUsuario = async () => {
     try {
         const res = await fetch("https://playground.4geeks.com/todo/users/juanru", {
             method: 'DELETE'
@@ -30,10 +30,10 @@ async function eliminarUsuario() {
     } catch (error) {
         console.log('Error al eliminar usuario ==> ', error);
     }
-}
+};
 
-// Función para leer un usuario
-async function leerUsuario() {
+// Lee los datos de juanru
+const leerUsuario = async () => {
     try {
         const resultado = await fetch('https://playground.4geeks.com/todo/users/juanru');
         const data = await resultado.json();
@@ -43,39 +43,43 @@ async function leerUsuario() {
         console.log('Error ==> ', error);
         return null;
     }
-}
+};
 
-// Componente principal
+// Componente principal que gestiona la lista de tareas
 const Home = () => {
-    const [newEntry, setNewEntry] = useState('');
-    const [toDoList, setToDoList] = useState([]);
-    const [estado, setEstado] = useState(false);
-    const conteo = toDoList.length;
+    const [newEntry, setNewEntry] = useState(''); // Entrada de nueva tarea
+    const [toDoList, setToDoList] = useState([]); // Lista de tareas
+    const [estado, setEstado] = useState(false); // Control del botón eliminar
+    const conteo = toDoList.length; // Número de tareas pendientes
 
-    function ratonEncimaDelElemento(index) {
-        setEstado(index);
-    }
+    const ratonEncimaDelElemento = (index) => {
+        setEstado(index); // Mostrar botón eliminar cuando el ratón está encima
+    };
 
-    function ratonFueraDelElemento() {
-        setEstado(false);
-    }
+    const ratonFueraDelElemento = () => {
+        setEstado(false); // Ocultar botón eliminar cuando el ratón sale
+    };
 
-    async function onSubmit(e) {
+    // Envío del formulario para agregar una tarea
+    const onSubmit = async (e) => {
         e.preventDefault();
+        if (newEntry.trim() === "") return; // No agregar si está vacío
         await crearToDo(newEntry);
-        setNewEntry('');
+        setNewEntry(''); // Limpia el campo de entrada
         console.log("onSubmit");
     };
 
-    async function eliminarElemento(index) {
+    // Elimina una tarea de la lista
+    const eliminarElemento = async (index) => {
         const item = toDoList[index];
         await eliminarToDo(item.id);  // Pasa el ID del item a eliminar
         const result = toDoList.filter((_, i) => i !== index);
-        setToDoList(result);
+        setToDoList(result); // Actualiza la lista sin el elemento eliminado
         console.log("onDelete");
     };
 
-    async function crearToDo(item) {
+    // Crea una nueva tarea
+    const crearToDo = async (item) => {
         try {
             const res = await fetch('https://playground.4geeks.com/todo/todos/juanru', {
                 method: 'POST',
@@ -87,14 +91,15 @@ const Home = () => {
             });
             const data = await res.json();
             const nuevaLista = [...toDoList, { id: data.id, label: item }];
-            setToDoList(nuevaLista);
+            setToDoList(nuevaLista); // Añade la nueva tarea a la lista
             console.log(data);
         } catch (error) {
             console.log('Error al crear ToDo ==> ', error);
         }
-    }
+    };
 
-    async function eliminarToDo(id) {
+    // Elimina una tarea mediante su ID
+    const eliminarToDo = async (id) => {
         try {
             const res = await fetch(`https://playground.4geeks.com/todo/todos/${id}`, {
                 method: 'DELETE'
@@ -102,78 +107,87 @@ const Home = () => {
             if (!res.ok) {
                 throw new Error('Error al eliminar el ToDo');
             }
-            await leerUsuario();
+            await leerUsuario(); // Actualiza los datos del usuario tras eliminar el ToDo
         } catch (error) {
             console.log('Error ==> ', error);
         }
-    }
+    };
 
-    async function clearToDoList() {
+    // Elimina todas las tareas y al usuario
+    const clearToDoList = async () => {
         for (const item of toDoList) {
-            await eliminarToDo(item.id);
+            await eliminarToDo(item.id); // Elimina cada tarea individualmente
         }
-        setToDoList([]);
-        eliminarUsuario();
-    }
+        setToDoList([]); // Limpia la lista local
+        eliminarUsuario(); // Elimina el usuario 
+    };
 
-    async function fetchData() {
+    // Recupera los datos del usuario
+    const fetchData = async () => {
         const data = await leerUsuario();
         console.log(data);
         if (data && Array.isArray(data.todos)) {
-            setToDoList(data.todos);
+            setToDoList(data.todos); // Si el usuario existe, carga sus tareas
         } else {
-            await crearUsuario();
+            await crearUsuario(); // Si no existe, crea el usuario
             const nuevaLista = await leerUsuario();
-            setToDoList(nuevaLista.todos);
+            setToDoList(nuevaLista.todos); // Carga las tareas del nuevo usuario
         }
-    }
+    };
 
+    // Carga los datos 
     useEffect(() => {
         fetchData();
     }, []);
 
     return (
-        <div className="container w-50 text-center">
-            <label htmlFor="exampleInputEmail1" className="form-label" style={{ fontSize: "30px", paddingTop: "10px" }}>To Do List</label>
-            <div className="container-flex lavenderBlush border myStyle">
+        <div className="container w-75 text-center mt-5">
+            <h1 className="display-4" style={{ fontSize: "35px", paddingBottom: "20px", color: "#5a5a5a" }}>Mi To-Do List</h1>
+            <div className="container-flex bg-light border rounded shadow-lg p-3">
                 <form onSubmit={onSubmit}>
-                    <div className="container-flex border-bottom p-1">
+                    <div className="d-flex justify-content-between border-bottom p-3">
                         <input
                             onChange={(e) => setNewEntry(e.target.value)}
                             value={newEntry}
                             type="text"
-                            className="form-control lavenderBlush inputStyle"
-                            placeholder="Agregar tarea"
-                            id="exampleInput"
+                            className="form-control mb-3 me-2"
+                            placeholder="Añadir una nueva tarea"
+                            id="newTodoInput"
+                            style={{ fontSize: "18px", height: "45px" }}
                         />
+                        <button
+                            type="submit"
+                            className="btn btn-primary mb-3"
+                        >
+                            Agregar tarea
+                        </button>
                     </div>
                 </form>
                 <ul className="list-group list-group-flush">
                     {toDoList.length === 0 ? (
-                        <p className="text-center pt-3">No hay tareas</p>
+                        <p className="text-center pt-4" style={{ fontSize: "18px", color: "#6c757d" }}>No hay tareas disponibles</p>
                     ) : (
                         toDoList.map((item, index) => (
                             <li
                                 key={index}
-                                className="list-group-item lavenderBlush d-flex justify-content-between align-items-center"
+                                className="list-group-item bg-white d-flex justify-content-between align-items-center mb-2"
                                 onMouseOver={() => ratonEncimaDelElemento(index)}
                                 onMouseOut={() => ratonFueraDelElemento()}
+                                style={{ fontSize: "20px", padding: "15px 10px", cursor: "pointer" }}
                             >
                                 {item.label}
                                 {estado === index && (
-                                    <button className="btn" onClick={() => eliminarElemento(index)}>❌</button>
+                                    <button onClick={() => eliminarElemento(index)}>Eliminar</button>
                                 )}
                             </li>
                         ))
                     )}
                 </ul>
-                <div className="pt-3 ps-2 border-top d-flex justify-content-around">
-                    Tareas pendientes: {conteo}
-                    <button className="btn" onClick={clearToDoList}>Limpiar</button>
+                <div className="pt-4 d-flex justify-content-between align-items-center">
+                    <span className="text-muted">Tareas pendientes: {conteo}</span>
+                    <button className="btn btn-danger" onClick={clearToDoList}>Limpiar lista</button>
                 </div>
             </div>
-            <div style={{ height: "3px", borderRadius: "3px" }} className="lavenderBlush border mx-1"></div>
-            <div style={{ height: "3px", borderRadius: "3px" }} className="lavenderBlush border mx-2"></div>
         </div>
     );
 };
